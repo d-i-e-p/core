@@ -33,7 +33,3 @@ kubectl apply -f flux/flux-system/gotk-sync.yaml
 export COMPONENTS_CONFIG_DIR=components/config
 
 kubectl apply -f $COMPONENTS_CONFIG_DIR
-
-kubectl apply 
-
-mqttx conn -h 'mqtt-mosquitto.mqtt.svc.cluster.local' -p 1883 -u 'admin' -P 'admin@123'
