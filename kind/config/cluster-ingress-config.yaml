@@ -13,8 +13,5 @@ nodes:
     hostPort: 88
     protocol: TCP
   - containerPort: 443
-    hostPort: 4438
+    hostPort: 443
     protocol: TCP
-  - containerPort: 1883
-    hostPort: 1883
-    protocol: TCP    
