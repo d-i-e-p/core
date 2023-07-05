@@ -6,7 +6,7 @@ metadata:
   namespace: flux-system
 spec:
   dependsOn:
-    - mqtt-component
+    - name: mosquitto-mqtt-broker-component
   interval: 5m0s
   path: ./web-client/mqttx/deployment
   prune: true
