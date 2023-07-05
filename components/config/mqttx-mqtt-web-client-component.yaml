@@ -1,0 +1,16 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: mqttx-mqtt-web-client-component
+  namespace: flux-system
+spec:
+  dependsOn:
+    - mqtt-component
+  interval: 5m0s
+  path: ./web-client/mqttx/deployment
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: mqtt-component
+  targetNamespace: mqtt
