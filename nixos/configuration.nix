@@ -17,9 +17,6 @@
   networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
-  # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
   # Enable networking
   networking.networkmanager.enable = true;
@@ -56,7 +53,10 @@
     isNormalUser = true;
     description = "Dennis Schroeder";
     extraGroups = [ "networkmanager" "wheel" ];
-    packages = with pkgs; [];
+    packages = with pkgs; [
+      k3s
+      iptables
+    ];
     openssh.authorizedKeys.keys = [
       "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDR8FGe66mF5PFKUF3wBXB3hdL1QeY706phvtaC/abJa0xdNq/t/QKuxhbeeya+xYp2MBFsnfwobWtbVgD1fS/UlEJxz+ex0WDdOtqAJ+9iWQLC9JCtcFD0NoMMTPbEulWztdcFrClDSUBm/kMs94a5gIdf8p6gRHMqNzVAzpaxU7pL32rezHp6JtphVdGSbp8ZW2Aq7oHEwcm4R0AeJR75dYcJdu2v+t5g7c9eGm0cqZnWl5KEfqHjyuC+zyPlSGyVDYI3zcKTtUY/0dT9VPhy4+QYt+k8/lY98mvvoWG6Mo3V9gQiJMBNYBn/ktX761LWzUJBh21dLc5KGkoo1Bw7PqyJz0U67fl1ti/ITCsNFWo9M7Nn8fG8beDV2v61C9K4i3oQKep0OocdcdXCIIDde0SQIwQqowWGLs583WiZo6Sy8dnU3u3C7df6Zy46ikNWo2Q8q03BSAUBj+5QHkd70noTxqBzGow4hHC7rwpye/8v/OmNCWdUH4VZXMovdGKJgqmLkdalDog8wA7B1v6ZwONgra1v3dpnyRLVZIr5A5GXjdbbtfV0jL7QlKgZRtWHYrHIN4XfCw/dGkMb9S0rWM3XdenOFmfzjw83/jnaletDtAFRHVkaO+Hd/a6qCSQjtYPz0yudvOYoFi8pFBeC774C02GkE57a7++6RubA2Q== dennisschroeder@me.com" # content of authorized_keys file
       # note: ssh-copy-id will add user@clientmachine after the public key
@@ -64,28 +64,39 @@
     ];
   };
 
+  users.users.root.openssh.authorizedKeys.keys = [
+    "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDR8FGe66mF5PFKUF3wBXB3hdL1QeY706phvtaC/abJa0xdNq/t/QKuxhbeeya+xYp2MBFsnfwobWtbVgD1fS/UlEJxz+ex0WDdOtqAJ+9iWQLC9JCtcFD0NoMMTPbEulWztdcFrClDSUBm/kMs94a5gIdf8p6gRHMqNzVAzpaxU7pL32rezHp6JtphVdGSbp8ZW2Aq7oHEwcm4R0AeJR75dYcJdu2v+t5g7c9eGm0cqZnWl5KEfqHjyuC+zyPlSGyVDYI3zcKTtUY/0dT9VPhy4+QYt+k8/lY98mvvoWG6Mo3V9gQiJMBNYBn/ktX761LWzUJBh21dLc5KGkoo1Bw7PqyJz0U67fl1ti/ITCsNFWo9M7Nn8fG8beDV2v61C9K4i3oQKep0OocdcdXCIIDde0SQIwQqowWGLs583WiZo6Sy8dnU3u3C7df6Zy46ikNWo2Q8q03BSAUBj+5QHkd70noTxqBzGow4hHC7rwpye/8v/OmNCWdUH4VZXMovdGKJgqmLkdalDog8wA7B1v6ZwONgra1v3dpnyRLVZIr5A5GXjdbbtfV0jL7QlKgZRtWHYrHIN4XfCw/dGkMb9S0rWM3XdenOFmfzjw83/jnaletDtAFRHVkaO+Hd/a6qCSQjtYPz0yudvOYoFi8pFBeC774C02GkE57a7++6RubA2Q== dennisschroeder@me.com" # content of authorized_keys file
+    # note: ssh-copy-id will add user@clientmachine after the public key
+    # but we can remove the "@clientmachine" part
+  ];
+
   # Enable automatic login for the user.
   services.getty.autologinUser = "dennis";
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
-  # This is required so that pod can reach the API server (running on port 6443 by default)
-  networking.firewall.allowedTCPPorts = [ 6443 ];
-  services.k3s.enable = true;
-  services.k3s.role = "server";
-  services.k3s.extraFlags = toString [
-   # "--kubelet-arg=v=4" # Optionally add additional args to k3s
-  ];
-
   # List packages installed in system profile. To search, run:
   environment.systemPackages = with pkgs; [
-  #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     wget
     git
-    k3s
     usbutils
   ];
+
+  systemd.services.k3s = {
+    description = "K3s";
+    after = [ "network.target" ];
+    wantedBy = [ "multi-user.target" ];
+    environment = {
+      K3S_KUBECONFIG_OUTPUT = "/etc/rancher/k3s/k3s.yaml";
+      K3S_KUBECONFIG_MODE = "644";
+    };
+    serviceConfig = {
+      Type = "simple";
+      ExecStart = "${pkgs.k3s}/bin/k3s server";
+    };
+  };
+
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -100,17 +111,16 @@
   # Enable the OpenSSH daemon.
   services.openssh = {
     enable = true;
-    # require public key authentication for better security
     settings.PasswordAuthentication = false;
     settings.KbdInteractiveAuthentication = false;
     #settings.PermitRootLogin = "yes";
   };
 
   # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
+  networking.firewall.allowedTCPPorts = [ 6443 ]; # This is required so that pod can reach the API server (running on port 6443 by default)
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
+  networking.firewall.enable = false;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
