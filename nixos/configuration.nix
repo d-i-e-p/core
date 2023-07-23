@@ -2,7 +2,14 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
+
+let
+  coreModule = import ./core.nix {
+    inherit lib;   # Pass the lib attribute from the parent scope.
+    inherit pkgs;  # Pass the pkgs attribute from the parent scope.
+  };
+in
 
 {
   imports =
@@ -56,6 +63,8 @@
     packages = with pkgs; [
       k3s
       iptables
+      coreModule
+      
     ];
     openssh.authorizedKeys.keys = [
       "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDR8FGe66mF5PFKUF3wBXB3hdL1QeY706phvtaC/abJa0xdNq/t/QKuxhbeeya+xYp2MBFsnfwobWtbVgD1fS/UlEJxz+ex0WDdOtqAJ+9iWQLC9JCtcFD0NoMMTPbEulWztdcFrClDSUBm/kMs94a5gIdf8p6gRHMqNzVAzpaxU7pL32rezHp6JtphVdGSbp8ZW2Aq7oHEwcm4R0AeJR75dYcJdu2v+t5g7c9eGm0cqZnWl5KEfqHjyuC+zyPlSGyVDYI3zcKTtUY/0dT9VPhy4+QYt+k8/lY98mvvoWG6Mo3V9gQiJMBNYBn/ktX761LWzUJBh21dLc5KGkoo1Bw7PqyJz0U67fl1ti/ITCsNFWo9M7Nn8fG8beDV2v61C9K4i3oQKep0OocdcdXCIIDde0SQIwQqowWGLs583WiZo6Sy8dnU3u3C7df6Zy46ikNWo2Q8q03BSAUBj+5QHkd70noTxqBzGow4hHC7rwpye/8v/OmNCWdUH4VZXMovdGKJgqmLkdalDog8wA7B1v6ZwONgra1v3dpnyRLVZIr5A5GXjdbbtfV0jL7QlKgZRtWHYrHIN4XfCw/dGkMb9S0rWM3XdenOFmfzjw83/jnaletDtAFRHVkaO+Hd/a6qCSQjtYPz0yudvOYoFi8pFBeC774C02GkE57a7++6RubA2Q== dennisschroeder@me.com" # content of authorized_keys file

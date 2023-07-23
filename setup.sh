@@ -1,5 +1,4 @@
-#!/bin/sh
-set -o errexit
+
 echo "Starting Setup"
 
 # Inspired by  https://github.com/fluxcd/flux2/discussions/1499
