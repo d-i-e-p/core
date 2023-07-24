@@ -1,21 +1,23 @@
-{ lib, pkgs ? import <nixpkgs> {} }:
+{ pkgs ? import <nixpkgs> {} }:
 
- pkgs.stdenv.mkDerivation rec {
-    name = "core";
-    src = pkgs.fetchFromGitHub {
-        owner = "d-i-e-p";
-        repo = "core";
-        rev = "main";
-        sha256 = "sha256-gJzOmTcZbe01/D68mfCIdsbwSFqgSugigc+vCoWH3T4=";
-    };
+let
+  manifests = import ./manifests.nix { inherit pkgs; };
+  k3s = pkgs.k3s;
+in
 
-    buildInputs = [ pkgs.k3s ];
+ pkgs.writeShellApplication {
+    name = "diep-core";
 
-    installPhase = ''
-        mkdir -p $out/bin
-        cp -r $src $out/bin/core
-        ls $out/bin/core
-        # Set the permissions of the downloaded .sh file to make it executable
-        chmod +x $out/bin/core/setup.sh
+    runtimeInputs = [ k3s ];
+
+    text = ''
+        k3s kubectl cluster-info
+        
+        echo "Installing Flux"
+        k3s kubectl apply -f "${manifests}/bin/manifests/flux/flux-system/gotk-components.yaml"
+        k3s kubectl apply -f "${manifests}/bin/manifests//flux/flux-system/gotk-sync.yaml"
+
+        echo "Installing Core Components"
+        k3s kubectl apply -f "${manifests}/bin//manifests/components/config"
     '';
 }

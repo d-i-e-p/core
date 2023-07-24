@@ -6,7 +6,6 @@
 
 let
   coreModule = import ./core.nix {
-    inherit lib;   # Pass the lib attribute from the parent scope.
     inherit pkgs;  # Pass the pkgs attribute from the parent scope.
   };
 in
@@ -113,7 +112,7 @@ in
     wantedBy = [ "multi-user.target" ];
     serviceConfig = {
       Type = "simple";
-      ExecStart = "${coreModule}/bin/core/setup.sh ${pkgs.k3s}/bin/k3s";
+      ExecStart = "${coreModule}/bin/diep-core";
     };
   };
 
