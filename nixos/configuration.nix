@@ -113,7 +113,7 @@ in
     wantedBy = [ "multi-user.target" ];
     serviceConfig = {
       Type = "simple";
-      ExecStart = "${pkgs.core}/bin/core/setup.sh";
+      ExecStart = "${coreModule}/bin/core/setup.sh";
     };
   };
 

@@ -9,6 +9,8 @@
         sha256 = "sha256-KmM0ZZLXbaWg1fPqp6/lDYsCwcARCBmiwlulmC9yxao=";
     };
 
+    buildInputs = [ pkgs.k3s ];
+
     installPhase = ''
         mkdir -p $out/bin
         cp -r $src $out/bin/core
