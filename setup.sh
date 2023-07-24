@@ -2,7 +2,8 @@
 #!/usr/bin/env bash
 
 # Add the k3s executable path to the PATH variable
-export PATH="$1:$PATH"
+k3s_path=$1
+export PATH="$k3s_path:$PATH"
 
 echo "Starting Setup"
 
