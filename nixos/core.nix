@@ -6,7 +6,7 @@
         owner = "d-i-e-p";
         repo = "core";
         rev = "main";
-        sha256 = "sha256-KmM0ZZLXbaWg1fPqp6/lDYsCwcARCBmiwlulmC9yxao=";
+        sha256 = "";
     };
 
     buildInputs = [ pkgs.k3s ];
@@ -14,7 +14,7 @@
     installPhase = ''
         mkdir -p $out/bin
         cp -r $src $out/bin/core
-        ls $out/bin
+        ls $out/bin/core
         # Set the permissions of the downloaded .sh file to make it executable
         chmod +x $out/bin/core/setup.sh
     '';
