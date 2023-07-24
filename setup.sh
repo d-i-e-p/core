@@ -1,6 +1,3 @@
-
-#!/usr/bin/env bash
-
 k3s=$1
 
 echo "Starting Setup"

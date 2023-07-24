@@ -6,7 +6,7 @@
         owner = "d-i-e-p";
         repo = "core";
         rev = "main";
-        sha256 = "";
+        sha256 = "sha256-avCC8TxWH5bPj0ykuDxgBoPhb1roX5m19JJzfzErd9c=";
     };
 
     buildInputs = [ pkgs.k3s ];
