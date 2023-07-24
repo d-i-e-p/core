@@ -9,12 +9,6 @@
         sha256 = "sha256-KmM0ZZLXbaWg1fPqp6/lDYsCwcARCBmiwlulmC9yxao=";
     };
 
-    phases = "buildPhase";
-    builder = ./setup.sh;
-
-    nativeBuildInputs = [ pkgs.k3s ];
-    PATH = lib.makeBinPath nativeBuildInputs;
-
     installPhase = ''
         mkdir -p $out/bin
         cp -r $src $out/bin/core
