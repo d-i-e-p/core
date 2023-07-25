@@ -10,7 +10,7 @@ pkgs.stdenv.mkDerivation {
     src = fetchFromGitHub {
         owner = "d-i-e-p";
         repo = "core";
-        rev = "fc01797";
+        rev = "aaff863";
         sha256 = "sha256-LrtluI9YVLCsXp+eCO6LaWCqCr7tQ+7AwWaAiDhDj3A=";
     };
 
@@ -20,7 +20,7 @@ pkgs.stdenv.mkDerivation {
         cp -r $src $out/bin/manifests
         
         echo "Installed these manifest files to $out"
-        ls -la $out
+        ls -la $out/bin/manifests
         echo "Done installing manifest files!"
     '';
 }
